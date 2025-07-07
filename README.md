@@ -42,6 +42,12 @@ Como instalar o Docker no Ubuntu:
 
 Obtendo os códigos através do Docker.
 
+As imagens já estão publicadas e disponíveis no Docker Hub:
+
+(https://hub.docker.com/r/cordeiroprog/prog1)
+(https://hub.docker.com/r/cordeiroprog/prog2)
+(https://hub.docker.com/r/cordeiroprog/prog3)
+
 Para obter os códigos que estão no Docker é necessário fazer o download deles através do seguinte código no terminal:
 
 sudo docker pull cordeiroprog/progx
