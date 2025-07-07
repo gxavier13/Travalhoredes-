@@ -1,0 +1,53 @@
+import socket
+
+import time
+
+import numpy as np
+
+import pickle
+
+import struct
+
+p2_ip = input("Digite o IP do p2: ")
+
+PORT = 6000
+
+n = int(input("Digite a ordem da matriz quadrada: "))
+
+qtd = int(input("Digite o número de matrizes a serem criadas: "))
+
+for i in range(qtd):
+
+        print(f"📦 Criando e enviando matriz {i+1}/{qtd}...")
+
+        matriz = np.random.randint(1, 10, (n, n))
+
+        start_time = time.time()
+
+        pacote = {
+
+            'matriz': matriz,
+
+            'start_time': start_time
+
+        }
+
+        data = pickle.dumps(pacote)
+
+        size = struct.pack('>Q', len(data))
+
+        tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        tcp.connect((p2_ip, PORT))
+
+        tcp.sendall(size)
+
+        tcp.sendall(data)
+
+        tcp.close()
+
+        print(f"✅ Matriz {i+1}/{qtd} enviada ao p2.")
+
+print("🎯 Todas as matrizes foram enviadas.")
+
+
