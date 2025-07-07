@@ -1,0 +1,81 @@
+import socket
+
+import pickle
+
+import numpy as np
+
+import time
+
+import struct
+
+def recv_all(sock, count):
+
+        buf = b''
+
+        while len(buf) < count:
+
+            to_read = min(4096, count - len(buf))
+
+            newbuf = sock.recv(to_read)
+
+            if not newbuf:
+
+                raise ConnectionError("Conexão encerrada antes de receber todos os dados")
+
+            buf += newbuf
+
+        return buf
+
+PORT = 6000
+
+tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+tcp.bind(('', PORT))
+
+tcp.listen(5)
+
+print("p3 aguardando matrizes de p2...")
+
+while True:
+
+        con, addr = tcp.accept()
+
+        print("🔷 Conexão recebida de p2.")
+
+        try:
+
+            size_data = recv_all(con, 8)
+
+            size = struct.unpack('>Q', size_data)[0]
+
+            data = recv_all(con, size)
+
+            pacote = pickle.loads(data)
+
+        except Exception as e:
+
+            print(f"❌ Erro ao receber: {e}")
+
+            con.close()
+
+            continue
+
+        con.close()
+
+        matriz = pacote['matriz']
+
+        start_time = pacote['start_time']
+
+        determinante = np.linalg.det(matriz)
+
+        tempo_total = time.time() - start_time
+
+        print("\n✅ Matriz recebida:")
+
+        print(matriz)
+
+        print(f"\n📐 Determinante: {determinante}")
+
+        print(f"⏱️ Tempo total (segundos): {round(tempo_total, 4)}")
+
+
