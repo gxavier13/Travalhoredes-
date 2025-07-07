@@ -1,0 +1,111 @@
+import socket
+
+import pickle
+
+import numpy as np
+
+import struct
+
+def recv_all(sock, count):
+
+        buf = b''
+
+        while len(buf) < count:
+
+            to_read = min(4096, count - len(buf))
+
+            newbuf = sock.recv(to_read)
+
+            if not newbuf:
+
+                raise ConnectionError("Conexão encerrada antes de receber todos os dados")
+
+            buf += newbuf
+
+        return buf
+
+def get_local_ip():
+
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+        s.connect(('8.8.8.8', 80))
+
+        ip = s.getsockname()[0]
+
+        s.close()
+
+        return ip
+
+local_ip = get_local_ip()
+
+print(f"p2 rodando em {local_ip}:6000")
+
+p3_ip = input("Digite o IP do p3: ")
+
+PORT = 6000
+
+tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+tcp.bind(('', PORT))
+
+tcp.listen(5)  # permite backlog de conexões
+
+print("p2 aguardando matrizes de p1...")
+
+while True:
+
+        con, addr = tcp.accept()
+
+        print("🔷 Conexão recebida de p1.")
+
+        try:
+
+            size_data = recv_all(con, 8)
+
+            size = struct.unpack('>Q', size_data)[0]
+
+            data = recv_all(con, size)
+
+            dados_recebidos = pickle.loads(data)
+
+        except Exception as e:
+
+            print(f"❌ Erro ao receber: {e}")
+
+            con.close()
+
+            continue
+
+        con.close()
+
+        matriz_original = dados_recebidos['matriz']
+
+        start_time = dados_recebidos['start_time']
+
+        matriz_invertida = np.transpose(matriz_original)
+
+        pacote_para_p3 = {
+
+            'matriz': matriz_invertida,
+
+            'start_time': start_time
+
+        }
+
+        data_p3 = pickle.dumps(pacote_para_p3)
+
+        size_p3 = struct.pack('>Q', len(data_p3))
+
+        tcp2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        tcp2.connect((p3_ip, PORT))
+
+        tcp2.sendall(size_p3)
+
+        tcp2.sendall(data_p3)
+
+        tcp2.close()
+
+        print("✅ Matriz invertida enviada para p3.")
+
+
