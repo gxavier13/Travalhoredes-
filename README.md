@@ -1,6 +1,6 @@
 # Travalhoredes
 
-Este projeto implementa 3 aplicativos (p1.py, p2.py, p3.py) para geração, envio, processamento e cálculo do determinante de matrizes em um ambiente com 3 VMs ou 3 máquinas distintas.
+Este projeto foi feito por Davi cordeiro e Gabriel Xavier, implementa 3 aplicativos (p1.py, p2.py, p3.py) para geração, envio, processamento e cálculo do determinante de matrizes em um ambiente com 3 VMs ou 3 máquinas distintas.
 
 p1.py: Gera N matrizes aleatórias de ordem escolhida, e envia cada uma delas para o p2.py.
 
